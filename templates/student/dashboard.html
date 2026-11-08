@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="hero-card">
+  <div>
+    <h1>Hello, {{ me.name.split(' ')[0] }}</h1>
+    <div class="muted" style="color:rgba(255,255,255,.85)">Your exams are listed below.</div>
+    <div class="meta">
+      <span class="pill">{{ icon("key") }} {{ me.roll }}</span>
+      <span class="pill">{{ icon("book") }} {{ me.branch }}</span>
+      <span class="pill">{{ icon("calendar") }} {{ me.year }}</span>
+    </div>
+  </div>
+</section>
+<h2 class="mt" style="margin-top:28px">Your exams</h2>
+{% if not cards %}
+<div class="card empty">{{ icon("file", "ic-lg") }}<h3>No exams for you yet</h3><p>When your admin shares an exam link for your branch and year, it will appear here.</p></div>
+{% else %}
+<div class="grid grid-3">
+{% for c in cards %}{% set e = c.exam %}
+  <article class="card lift exam-card" style="--d:{{ loop.index0 * 0.06 }}s">
+    <div class="card-title" style="margin:0">
+      <h3>{{ e.title }}</h3>
+      {% if c.state == 'live' %}<span class="badge badge-green badge-live">Open</span>
+      {% elif c.state == 'in_progress' %}<span class="badge badge-amber badge-live">In progress</span>
+      {% elif c.state == 'submitted' %}<span class="badge badge-blue">Submitted</span>
+      {% elif c.state == 'upcoming' %}<span class="badge badge-grey">Upcoming</span>
+      {% else %}<span class="badge badge-red">Closed</span>{% endif %}
+    </div>
+    {% if e.description %}<p class="muted small" style="margin:0">{{ e.description }}</p>{% endif %}
+    <div class="exam-meta">
+      <span>{{ icon("clock") }} {{ e.duration_minutes }} min</span>
+      <span>{{ icon("list") }} {{ c.questions }} questions</span>
+    </div>
+    <div class="exam-meta">
+      <span>{{ icon("calendar") }} <span class="js-time" data-ts="{{ e.start_at }}">{{ e.start_at|utcfmt }}</span></span>
+      <span>to <span class="js-time" data-ts="{{ e.end_at }}">{{ e.end_at|utcfmt }}</span></span>
+    </div>
+    {% if c.state == 'live' %}<a class="btn btn-primary" href="{{ url_for('student.entry', slug=e.slug) }}">Start exam {{ icon("arrowr") }}</a>
+    {% elif c.state == 'in_progress' %}<a class="btn btn-success" href="{{ url_for('student.attempt_page', attempt_id=c.attempt.id) }}">Continue exam {{ icon("arrowr") }}</a>
+    {% elif c.state == 'submitted' %}<span class="btn btn-secondary disabled">Completed</span>
+    {% elif c.state == 'upcoming' %}<span class="btn btn-secondary disabled">Not open yet</span>
+    {% else %}<span class="btn btn-secondary disabled">Closed</span>{% endif %}
+  </article>
+{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

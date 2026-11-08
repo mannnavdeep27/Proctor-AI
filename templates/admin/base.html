@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% set nav = [('admin.dashboard','grid','Dashboard'),('admin.exams_list','file','Exams'),('admin.students','users','Students'),('admin.results','bar','Results'),('admin.settings','settings','Settings')] %}
+{% block body_class %}admin-page{% endblock %}
+{% block body %}
+<div class="mobile-bar"><a class="brand" href="{{ url_for('admin.dashboard') }}"><span class="brand-mark">{{ icon("shield") }}</span>Proctor<b>AI</b></a>
+  <button class="icon-btn" id="menu-btn" aria-label="Menu">{{ icon("menu") }}</button></div>
+<div class="admin">
+  <nav class="sidebar" id="sidebar">
+    <a class="brand" href="{{ url_for('admin.dashboard') }}" style="margin:4px 8px 18px"><span class="brand-mark">{{ icon("shield") }}</span>Proctor<b>AI</b></a>
+    {% for ep, ic, label in nav %}<a class="side-link {{ 'active' if request.endpoint == ep or (ep == 'admin.exams_list' and request.endpoint in ('admin.exam_new','admin.exam_edit','admin.questions','admin.question_new','admin.question_edit')) or (ep == 'admin.results' and request.endpoint in ('admin.attempt_detail','admin.exam_similarity')) }}" href="{{ url_for(ep) }}">{{ icon(ic) }}{{ label }}</a>{% endfor %}
+    <div class="side-foot"><div class="small muted" style="padding:0 8px 10px">Signed in as <b>{{ admin_user.username }}</b></div>
+      <form method="post" action="{{ url_for('admin.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-secondary btn-block btn-sm">{{ icon("logout") }} Log out</button></form></div>
+  </nav>
+  <main class="admin-main">{% include "_flash.html" %}{% block content %}{% endblock %}</main>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/admin.js') }}?v=1"></script>{% block ascripts %}{% endblock %}{% endblock %}

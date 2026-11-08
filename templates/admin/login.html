@@ -1,0 +1,14 @@
+{% extends "auth/_shell.html" %}
+{% block title %}Admin login{% endblock %}
+{% block card %}
+<h2>Admin login</h2>
+<p class="muted">Enter your admin credentials to continue.</p>
+{% include "_flash.html" %}
+<form method="post" action="{{ url_for('admin.login_submit') }}" data-loading>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="field"><label for="u">Username</label><input class="input" id="u" name="username" value="{{ username or '' }}" autocomplete="username" required autofocus></div>
+  <div class="field"><label for="p">Password</label><div class="pw-wrap"><input class="input" id="p" type="password" name="password" autocomplete="current-password" required><button type="button" class="icon-btn pw-toggle" data-toggle-pw="#p" aria-label="Show password">{{ icon("eye") }}</button></div></div>
+  <button class="btn btn-primary btn-block">Log in</button>
+  <p class="center mt small"><a href="/login" style="font-weight: 600; color: #6d28d9;">← Back to Student Portal</a></p>
+</form>
+{% endblock %}

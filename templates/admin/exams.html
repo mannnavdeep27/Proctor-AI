@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block title %}Exams{% endblock %}
+{% block content %}
+<div class="admin-head"><h1>Exams</h1><a class="btn btn-primary" href="{{ url_for('admin.exam_new') }}">{{ icon("plus") }} New exam</a></div>
+{% if not exams %}<div class="card empty">{{ icon("file","ic-lg") }}<h3>No exams yet</h3><p>Create your first exam, then add questions.</p></div>{% endif %}
+<div class="grid">
+{% for e in exams %}
+<div class="card">
+  <div class="card-title"><div><h3 style="margin:0">{{ e.title }}</h3><div class="small muted">{{ e.audience }}</div></div>
+    {% if e.status == 'live' %}<span class="badge badge-green badge-live">Live</span>{% elif e.status == 'upcoming' %}<span class="badge badge-blue">Upcoming</span>{% elif e.status == 'closed' %}<span class="badge badge-grey">Closed</span>{% else %}<span class="badge badge-red">Link disabled</span>{% endif %}</div>
+  <div class="exam-meta" style="margin-bottom:12px"><span>{{ icon("clock") }} {{ e.duration_minutes }} min</span><span>{{ icon("list") }} {{ e.qcount }} questions</span><span>{{ icon("users") }} {{ e.acount }} attempts</span>
+    <span>{{ icon("calendar") }} <span class="js-time" data-ts="{{ e.start_at }}">{{ e.start_at|utcfmt }}</span> → <span class="js-time" data-ts="{{ e.end_at }}">{{ e.end_at|utcfmt }}</span></span></div>
+  <div class="link-box"><code>{{ e.link }}</code><button class="btn btn-secondary btn-sm" data-copy="{{ e.link }}">{{ icon("copy") }} Copy link</button></div>
+  <div class="btn-row mt">
+    <a class="btn btn-secondary btn-sm" href="{{ url_for('admin.questions', exam_id=e.id) }}">{{ icon("list") }} Questions</a>
+    <a class="btn btn-secondary btn-sm" href="{{ url_for('admin.results', exam=e.id) }}">{{ icon("bar") }} Results</a>
+    <a class="btn btn-secondary btn-sm" href="{{ url_for('admin.exam_edit', exam_id=e.id) }}">{{ icon("edit") }} Edit</a>
+    {% for act, label in (('toggle', 'Enable link' if not e.is_active else 'Disable link'), ('duplicate','Duplicate'), ('regenerate-link','New link')) %}
+    <form method="post" action="/admin/exams/{{ e.id }}/{{ act }}" {% if act == 'regenerate-link' %}data-confirm="Generate a new link? The old link will stop working."{% endif %}><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-ghost btn-sm">{{ label }}</button></form>{% endfor %}
+    <form method="post" action="{{ url_for('admin.exam_delete', exam_id=e.id) }}" data-confirm="Delete this exam with all its questions and attempts? This cannot be undone."><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="icon-btn danger" title="Delete exam" aria-label="Delete exam">{{ icon("trash") }}</button></form>
+  </div>
+</div>
+{% endfor %}
+</div>
+{% endblock %}

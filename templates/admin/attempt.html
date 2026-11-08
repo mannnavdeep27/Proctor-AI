@@ -1,0 +1,23 @@
+{% extends "admin/base.html" %}
+{% block title %}Attempt · {{ user.name }}{% endblock %}
+{% block content %}
+{% set r = att %}
+<div class="admin-head"><div><h1>{{ user.name }}</h1><div class="muted">{{ user.roll }} · {{ user.branch }} · {{ user.year }} · {{ exam.title }}</div></div>
+  <div class="btn-row"><a class="btn btn-secondary" href="{{ url_for('admin.results', exam=exam.id) }}">{{ icon("arrowl") }} Results</a>
+  <form method="post" action="{{ url_for('admin.attempt_delete', attempt_id=att.id) }}" data-confirm="Delete this attempt so the student can take the exam again?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-danger">{{ icon("trash") }} Delete attempt</button></form></div></div>
+<div class="grid grid-4">
+  <div class="card stat"><div class="stat-ic green">{{ icon("check") }}</div><div><b>{{ '%g' % att.score }} / {{ '%g' % att.max_score }}</b><span>Score</span></div></div>
+  <div class="card stat"><div class="stat-ic">{{ icon("target") }}</div><div><b>{% include "admin/_verdict.html" %}</b><span>{{ att.risk_points }} risk points</span></div></div>
+  <div class="card stat"><div class="stat-ic amber">{{ icon("alert") }}</div><div><b>{{ att.violations }}</b><span>Window violations</span></div></div>
+  <div class="card stat"><div class="stat-ic red">{{ icon("clock") }}</div><div><b style="font-size:15px">{{ end_reasons.get(att.end_reason, 'In progress') if att.submitted_at else 'In progress' }}</b><span>Ended by</span></div></div>
+</div>
+{% if pairs %}<div class="alert alert-warn mt">{{ icon("alert") }}<span>Similar answers with: {% for p in pairs %}<a href="{{ url_for('admin.attempt_detail', attempt_id=(p.b_id if p.a_id == att.id else p.a_id)) }}">{{ p.b_name if p.a_id == att.id else p.a_name }}</a> ({{ p.shared }} identical wrong answers){{ ', ' if not loop.last }}{% endfor %}</span></div>{% endif %}
+<div class="grid grid-2 mt">
+  <div class="card"><h3>Activity log</h3><ul class="timeline">
+    {% for ev in events %}<li><span class="pt {{ 'red' if ev.points >= 15 else 'amber' if ev.points else 'green' if ev.etype == 'SESSION_START' else 'blue' }}"></span><b>{{ labels.get(ev.etype, ev.etype) }}</b>{% if ev.points %} <span class="badge badge-grey">+{{ ev.points }}</span>{% endif %}
+      <div class="small muted"><span class="js-time" data-ts="{{ ev.ts }}" data-full="1">{{ ev.ts|utcfmt }}</span>{% if ev.detail %} · {{ ev.detail }}{% endif %}</div></li>{% else %}<li class="muted">No events recorded.</li>{% endfor %}</ul></div>
+  <div class="card"><h3>Answers</h3>{% for a in answers %}<div style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="small muted">Q{{ loop.index }} · {{ '%g' % a.marks }} mark(s)</div><div style="font-weight:600">{{ a.text }}</div>
+    <div class="small" style="color:{{ 'var(--green)' if a.is_correct else 'var(--red)' }}">{{ 'Correct' if a.is_correct else 'Wrong' if a.chosen else 'Not answered' }}{% if a.chosen %}: {{ a.chosen }}{% endif %}</div>
+    {% if not a.is_correct %}<div class="small muted">Correct answer: {{ a.correct }}</div>{% endif %}</div>{% endfor %}</div>
+</div>
+{% endblock %}

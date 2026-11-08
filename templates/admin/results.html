@@ -1,0 +1,17 @@
+{% extends "admin/base.html" %}
+{% block title %}Results{% endblock %}
+{% block content %}
+<div class="admin-head"><div><h1>{{ exam.title if exam else "Results" }}</h1><a class="small" href="{{ url_for('admin.results') }}">{{ icon("arrowl") }} All exams</a></div>
+  {% if exam %}<div class="btn-row"><a class="btn btn-secondary" href="{{ url_for('admin.exam_similarity', exam_id=exam.id) }}">{{ icon("target") }} Similarity report</a><a class="btn btn-primary" href="{{ url_for('admin.export_csv', exam_id=exam.id) }}">{{ icon("download") }} Export CSV</a></div>{% endif %}</div>
+{% if not exams %}<div class="card empty">{{ icon("bar","ic-lg") }}<h3>No exams yet</h3></div>{% else %}
+<form class="filters" method="get">
+  <select class="input" name="exam">{% for e in exams %}<option value="{{ e.id }}" {{ 'selected' if exam and e.id == exam.id }}>{{ e.title }}</option>{% endfor %}</select>
+  <select class="input" name="verdict"><option value="">All verdicts</option>{% for v in ('CLEAN','SUSPICIOUS','HIGH RISK') %}<option {{ 'selected' if v == f_verdict }}>{{ v }}</option>{% endfor %}</select>
+  <input class="input" name="q" value="{{ f_q }}" placeholder="Name or Roll No."><button class="btn btn-secondary btn-sm">Filter</button></form>
+{% if rows %}<div class="table-wrap"><table class="table"><thead><tr><th>Student</th><th>Branch / Year</th><th class="num">Score</th><th>Verdict</th><th class="num">Risk</th><th class="num">Away</th><th>Ended by</th><th>Submitted</th><th></th></tr></thead><tbody>
+{% for r in rows %}<tr><td><a href="{{ url_for('admin.attempt_detail', attempt_id=r.id) }}"><b>{{ r.name }}</b></a><div class="small muted">{{ r.roll }}</div></td><td>{{ r.branch }}<div class="small muted">{{ r.year }}</div></td>
+<td class="num">{{ '%g' % r.score }} / {{ '%g' % r.max_score }}</td><td>{% include "admin/_verdict.html" %}</td><td class="num">{{ r.risk_points }}</td><td class="num">{{ r.violations }}</td>
+<td class="small">{{ end_reasons.get(r.end_reason, 'In progress') if r.submitted_at else 'In progress' }}</td><td class="small js-time" data-ts="{{ r.submitted_at or '' }}">{{ r.submitted_at|utcfmt }}</td>
+<td><a class="icon-btn" href="{{ url_for('admin.attempt_detail', attempt_id=r.id) }}" title="Details">{{ icon("eye") }}</a></td></tr>{% endfor %}</tbody></table></div>
+{% else %}<div class="card empty">{{ icon("bar","ic-lg") }}<h3>No attempts found</h3></div>{% endif %}{% endif %}
+{% endblock %}

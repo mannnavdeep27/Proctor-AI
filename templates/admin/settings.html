@@ -1,0 +1,20 @@
+{% extends "admin/base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<div class="admin-head"><h1>Settings</h1></div>
+<div class="grid grid-2">
+  <div class="card"><h3>Branches &amp; years</h3><p class="muted small">Shown on the student registration form and when assigning exams. Separate items with commas.</p>
+    <form method="post" action="{{ url_for('admin.settings_lists') }}" data-loading><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="field"><label>Branches</label><textarea class="input" name="branches" rows="3">{{ branches }}</textarea></div>
+      <div class="field"><label>Years</label><textarea class="input" name="years" rows="2">{{ years }}</textarea></div><button class="btn btn-primary">Save lists</button></form></div>
+  <div class="card"><h3>Change admin password</h3>
+    <form method="post" action="{{ url_for('admin.settings_password') }}" data-loading><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="field"><label>Current password</label><input class="input" type="password" name="current" autocomplete="current-password" required></div>
+      <div class="field"><label>New password</label><input class="input" type="password" name="new" autocomplete="new-password" required></div>
+      <div class="field"><label>Confirm new password</label><input class="input" type="password" name="confirm" autocomplete="new-password" required></div><button class="btn btn-primary">Change password</button></form></div>
+  <div class="card"><h3>Email (OTP delivery)</h3>
+    <p>Status: {% if dev_mode %}<span class="badge badge-amber">Development mode - OTP shown on screen</span>{% else %}<span class="badge badge-green">Sending via {{ mail_provider }}</span>{% endif %}</p>
+    <form method="post" action="{{ url_for('admin.settings_test_email') }}" data-loading><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="field"><label>Send a test email to</label><input class="input" type="email" name="to" placeholder="you@gmail.com" required></div><button class="btn btn-secondary">Send test email</button></form></div>
+</div>
+{% endblock %}

@@ -1,0 +1,1 @@
+{% set v = r.verdict %}{% if v == 'CLEAN' %}<span class="badge badge-green">Clean</span>{% elif v == 'SUSPICIOUS' %}<span class="badge badge-amber">Suspicious</span>{% elif v == 'HIGH RISK' %}<span class="badge badge-red">High risk</span>{% else %}<span class="badge badge-grey">In progress</span>{% endif %}

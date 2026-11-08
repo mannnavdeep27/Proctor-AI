@@ -1,0 +1,9 @@
+{% extends "admin/base.html" %}
+{% block title %}Similarity · {{ exam.title }}{% endblock %}
+{% block content %}
+<div class="admin-head"><div><h1>Similarity report</h1><div class="muted">{{ exam.title }}</div></div><a class="btn btn-secondary" href="{{ url_for('admin.results', exam=exam.id) }}">{{ icon("arrowl") }} Results</a></div>
+<div class="alert alert-info">Options are shuffled for every student. Two students choosing the same wrong answers (matched by option text) is a strong hint of copying. Pairs are listed when they share at least 3 identical wrong answers making up 60% or more of the smaller wrong-answer count. Treat this as a hint, not proof.</div>
+{% if pairs %}<div class="table-wrap"><table class="table"><thead><tr><th>Student A</th><th>Student B</th><th class="num">Identical wrong</th><th>Overlap</th></tr></thead><tbody>
+{% for p in pairs %}<tr><td><a href="{{ url_for('admin.attempt_detail', attempt_id=p.a_id) }}"><b>{{ p.a_name }}</b></a><div class="small muted">{{ p.a_roll }} · {{ p.wrong_a }} wrong</div></td><td><a href="{{ url_for('admin.attempt_detail', attempt_id=p.b_id) }}"><b>{{ p.b_name }}</b></a><div class="small muted">{{ p.b_roll }} · {{ p.wrong_b }} wrong</div></td><td class="num"><b>{{ p.shared }}</b></td><td><div class="pair-bar"><i style="width:{{ p.percent }}%"></i></div><div class="small muted">{{ p.percent }}%</div></td></tr>{% endfor %}</tbody></table></div>
+{% else %}<div class="card empty">{{ icon("check","ic-lg") }}<h3>No suspicious pairs</h3><p>Nobody shares an unusual number of identical wrong answers.</p></div>{% endif %}
+{% endblock %}

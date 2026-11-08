@@ -1,0 +1,24 @@
+{% extends "admin/base.html" %}
+{% block title %}Questions · {{ exam.title }}{% endblock %}
+{% block content %}
+<div class="admin-head"><div><h1>{{ exam.title }}</h1><div class="muted">{{ questions|length }} question{{ '' if questions|length == 1 else 's' }}</div></div>
+  <div class="btn-row"><a class="btn btn-secondary" href="{{ url_for('admin.exams_list') }}">{{ icon("arrowl") }} Exams</a><a class="btn btn-primary" href="{{ url_for('admin.question_new', exam_id=exam.id) }}">{{ icon("plus") }} Add question</a></div></div>
+{% if attempts %}<div class="alert alert-warn">{{ attempts }} student(s) have already started this exam. Changing questions now can affect their scores.</div>{% endif %}
+<div class="card mb"><div class="card-title"><h3 style="margin:0">Import from CSV or Excel</h3><a href="{{ url_for('admin.questions_template') }}">{{ icon("download") }} Download template</a></div>
+  <form method="post" action="{{ url_for('admin.questions_import', exam_id=exam.id) }}" enctype="multipart/form-data" class="btn-row" data-loading>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input class="input" type="file" name="file" accept=".csv,.xlsx" style="max-width:360px" required><button class="btn btn-secondary">{{ icon("upload") }} Import</button></form></div>
+{% if not questions %}<div class="card empty">{{ icon("list","ic-lg") }}<h3>No questions yet</h3><p>Add questions one by one or import a file.</p></div>{% endif %}
+{% for q in questions %}
+<div class="card mb">
+  <div class="card-title"><div><span class="q-num">Question {{ loop.index }}</span> <span class="badge badge-grey">{{ '%g' % q.marks }} mark{{ '' if q.marks == 1 else 's' }}</span></div>
+    <div class="btn-row">
+      <form method="post" action="{{ url_for('admin.question_move', qid=q.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="dir" value="up"><button class="icon-btn" title="Move up" {{ 'disabled' if loop.first }}>{{ icon("up") }}</button></form>
+      <form method="post" action="{{ url_for('admin.question_move', qid=q.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="dir" value="down"><button class="icon-btn" title="Move down" {{ 'disabled' if loop.last }}>{{ icon("down") }}</button></form>
+      <a class="icon-btn" href="{{ url_for('admin.question_edit', qid=q.id) }}" title="Edit">{{ icon("edit") }}</a>
+      <form method="post" action="{{ url_for('admin.question_delete', qid=q.id) }}" data-confirm="Delete this question?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="icon-btn danger" title="Delete">{{ icon("trash") }}</button></form>
+    </div></div>
+  <div style="font-weight:600;white-space:pre-wrap">{{ q.text }}</div>
+  <ol type="A" style="margin:10px 0 0;padding-left:22px">{% for o in q.options %}<li style="{{ 'color:var(--green);font-weight:600' if loop.index0 == q.correct_index }}">{{ o }}{{ ' ✓' if loop.index0 == q.correct_index }}</li>{% endfor %}</ol>
+</div>
+{% endfor %}
+{% endblock %}

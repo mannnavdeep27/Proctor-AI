@@ -1,0 +1,14 @@
+{% extends "admin/base.html" %}
+{% block title %}Students{% endblock %}
+{% block content %}
+<div class="admin-head"><h1>Students</h1><span class="muted">{{ students|length }} shown</span></div>
+<form class="filters" method="get"><input class="input" name="q" value="{{ f_q }}" placeholder="Search name, Roll No. or Gmail">
+  <select class="input" name="branch"><option value="">All branches</option>{% for b in branches %}<option {{ 'selected' if b == f_branch }}>{{ b }}</option>{% endfor %}</select>
+  <select class="input" name="year"><option value="">All years</option>{% for y in years %}<option {{ 'selected' if y == f_year }}>{{ y }}</option>{% endfor %}</select>
+  <button class="btn btn-secondary btn-sm">Filter</button></form>
+{% if students %}<div class="table-wrap"><table class="table"><thead><tr><th>Roll No.</th><th>Name</th><th>Gmail</th><th>Branch</th><th>Year</th><th class="num">Exams taken</th><th></th></tr></thead><tbody>
+{% for s in students %}<tr><td><b>{{ s.roll }}</b></td><td>{{ s.name }}</td><td>{{ s.email }}</td><td>{{ s.branch }}</td><td>{{ s.year }}</td><td class="num">{{ s.attempts }}</td>
+<td><div class="btn-row" style="justify-content:flex-end"><a class="icon-btn" href="{{ url_for('admin.student_edit', uid=s.id) }}" title="Edit">{{ icon("edit") }}</a>
+<form method="post" action="{{ url_for('admin.student_delete', uid=s.id) }}" data-confirm="Delete this student and all their attempts?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="icon-btn danger" title="Delete">{{ icon("trash") }}</button></form></div></td></tr>{% endfor %}</tbody></table></div>
+{% else %}<div class="card empty">{{ icon("users","ic-lg") }}<h3>No students found</h3></div>{% endif %}
+{% endblock %}

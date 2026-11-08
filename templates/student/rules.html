@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block title %}Rules · {{ exam.title }}{% endblock %}
+{% block content %}
+<div class="rules-wrap">
+  <div class="card center" style="padding:34px 22px">
+    <span class="badge badge-blue">Ready to start</span>
+    <h1 style="margin-top:12px">{{ exam.title }}</h1>
+    {% if exam.description %}<p class="muted">{{ exam.description }}</p>{% endif %}
+    <div class="facts">
+      <div class="fact"><b>{{ exam.duration_minutes }}</b><span>minutes</span></div>
+      <div class="fact"><b>{{ questions }}</b><span>questions</span></div>
+      <div class="fact"><b>{{ '%g' % marks }}</b><span>total marks</span></div>
+      <div class="fact"><b>MCQ</b><span>question type</span></div>
+    </div>
+    <button class="btn btn-primary" id="open-rules">Read rules &amp; start {{ icon("arrowr") }}</button>
+    <p class="small muted mt">The timer starts only after you accept the rules and press Begin Exam.</p>
+  </div>
+</div>
+
+<div class="modal show" id="rules-modal" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+  <form class="modal-card rules-modal" method="post" action="{{ url_for('student.begin', slug=exam.slug) }}" data-loading id="begin-form" data-min="{{ exam.min_read_seconds }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="rules-scroll">
+      <h2 id="rules-title">Rules &amp; regulations</h2>
+      <div class="id-strip"><span>{{ icon("users") }} <b>{{ me.name }}</b></span><span>{{ icon("key") }} Roll No. <b>{{ me.roll }}</b></span><span>{{ me.branch }} · {{ me.year }}</span></div>
+      {% include "_flash.html" %}
+      <ol class="rule-list">{% for r in rules %}<li style="--d:{{ loop.index0 * 0.05 }}s"><span class="n">{{ loop.index }}</span><span>{{ r }}</span></li>{% endfor %}</ol>
+      <h3 style="margin-top:20px">Important for this exam</h3>
+      <ol class="rule-list warn">{% for r in system_rules %}<li><span class="n">!</span><span>{{ r }}</span></li>{% endfor %}</ol>
+    </div>
+    <div class="rules-foot">
+      <label class="check"><input type="checkbox" name="agree" id="agree"><span>I confirm that I am {{ me.name }} ({{ me.roll }}), and I have read and agree to follow the rules.</span></label>
+      <div class="btn-row" style="justify-content:space-between">
+        <span class="read-timer" id="read-timer"></span>
+        <span class="btn-row"><a class="btn btn-secondary" href="{{ url_for('student.dashboard') }}">Cancel</a>
+        <button class="btn btn-primary" id="begin-btn" disabled>Continue &amp; Begin Exam {{ icon("arrowr") }}</button></span>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/rules.js') }}?v=2"></script>{% endblock %}

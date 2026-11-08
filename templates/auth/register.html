@@ -1,0 +1,32 @@
+{% extends "auth/_shell.html" %}
+{% block title %}Register{% endblock %}
+{% block card %}
+<div class="tabs"><a href="{{ url_for('auth.login_page') }}">Log in</a><a class="active" href="{{ url_for('auth.register_page') }}">Register</a></div>
+<h2>Create your account</h2>
+<p class="muted">Register once with your details. You will log in with your Roll No.</p>
+{% include "_flash.html" %}
+<form method="post" action="{{ url_for('auth.register_page') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="field"><label for="name">Full name</label><input class="input" id="name" name="name" autocomplete="name" required></div>
+  <div class="field"><label for="roll">Roll No. (Login ID)</label><input class="input" id="roll" name="roll" autocapitalize="characters" required></div>
+  <div class="field"><label for="email">Gmail address</label><input class="input" id="email" name="email" type="email" required></div>
+  <div class="grid grid-2">
+    <div class="field">
+      <label for="branch">Branch</label>
+      <select class="input" id="branch" name="branch" required>
+        <option value="">Select</option>
+        {% for branch in branches %}
+          <option value="{{ branch }}">{{ branch }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field"><label for="year">Year</label><select class="input" id="year" name="year" required><option value="">Select</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option></select></div>
+  </div>
+  <div class="field"><label for="password">Password</label>
+    <div class="pw-wrap"><input class="input" id="password" type="password" name="password" autocomplete="new-password" required>
+    <button type="button" class="icon-btn pw-toggle" data-toggle-pw="#password" aria-label="Show password">👁️</button></div>
+  </div>
+  <button class="btn btn-primary btn-block mt">Create account</button>
+</form>
+<p class="center small muted mt">Already registered? <a href="{{ url_for('auth.login_page') }}">Log in</a></p>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "auth/_shell.html" %}
+{% block title %}Log in{% endblock %}
+{% block card %}
+<div class="tabs"><a class="active" href="{{ url_for('auth.login_page') }}">Log in</a><a href="{{ url_for('auth.register_page') }}">Register</a></div>
+<h2>Welcome back</h2>
+<p class="muted">Log in with your Roll No. and password.</p>
+{% include "_flash.html" %}
+<form method="post" action="{{ url_for('auth.login_submit') }}" data-loading>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="next" value="{{ next or '' }}">
+  <div class="field"><label for="roll">Roll No.</label>
+    <input class="input" id="roll" name="roll" value="{{ roll or '' }}" autocomplete="username" autocapitalize="characters" required autofocus></div>
+  <div class="field"><label for="password">Password</label>
+    <div class="pw-wrap"><input class="input" id="password" type="password" name="password" autocomplete="current-password" required>
+    <button type="button" class="icon-btn pw-toggle" data-toggle-pw="#password" aria-label="Show password">{{ icon("eye") }}</button></div></div>
+  <button class="btn btn-primary btn-block">Log in</button>
+  <p class="center mt small"><a href="{{ url_for('auth.forgot_page') }}">Forgot password?</a></p>
+  <p class="center mt small"><a href="/admin/login" style="font-weight: 600; color: #6d28d9;">Admin Portal →</a></p>
+</form>
+{% endblock %}

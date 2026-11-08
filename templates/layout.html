@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="topbar"><div class="container topbar-in">
+  <a class="brand" href="{{ url_for('student.dashboard') }}"><span class="brand-mark">{{ icon("shield") }}</span>Proctor<b>AI</b></a>
+  {% if me %}
+  <div class="user-chip">
+    <div class="user-meta"><b>{{ me.name }}</b><span>{{ me.roll }} · {{ me.branch }} · {{ me.year }}</span></div>
+    <div class="avatar">{{ me.name[:1]|upper }}</div>
+    <form method="post" action="{{ url_for('auth.logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="icon-btn" title="Log out" aria-label="Log out">{{ icon("logout") }}</button>
+    </form>
+  </div>
+  {% endif %}
+</div></header>
+<main class="page"><div class="container">{% include "_flash.html" %}{% block content %}{% endblock %}</div></main>
+{% endblock %}

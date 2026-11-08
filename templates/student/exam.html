@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ exam.title }}{% endblock %}
+{% block body_class %}exam-page{% endblock %}
+{% block body %}
+<div class="watermark" aria-hidden="true">{% for i in range(40) %}<span>{{ me.name }} · {{ me.roll }}</span>{% endfor %}</div>
+<div id="runner" data-user="{{ me.id }}" data-id="{{ attempt.id }}" data-api="{{ url_for('exam_api.state', attempt_id=attempt.id) }}" data-base="/api/attempt/{{ attempt.id }}" data-done="{{ url_for('student.done', attempt_id=attempt.id) }}">
+  <header class="exam-top">
+    <div class="container exam-top-in">
+      <div class="exam-title">{{ exam.title }}<small id="q-counter">Loading…</small></div>
+      <div class="timer" id="timer">
+        <svg viewBox="0 0 54 54"><circle class="bg" cx="27" cy="27" r="23" fill="none" stroke-width="5"/><circle class="fg" id="ring" cx="27" cy="27" r="23" fill="none" stroke-width="5" stroke-dasharray="144.5" stroke-dashoffset="0"/></svg>
+        <div><small>Time left</small><span class="time" id="time">--:--</span></div>
+      </div>
+    </div>
+    <div class="progress"><i id="bar"></i></div>
+  </header>
+  <div class="warn-banner" id="warn" role="alert"></div>
+  <main class="container exam-layout">
+    <section>
+      <div class="card q-card" id="qcard"><div class="skeleton" style="height:28px;width:70%"></div><div class="skeleton mt" style="height:60px"></div><div class="skeleton mt" style="height:60px"></div></div>
+    </section>
+    <aside class="card palette">
+      <div class="card-title"><h3 style="margin:0">Questions</h3><span class="small muted" id="answered">0 answered</span></div>
+      <div class="palette-grid" id="palette"></div>
+      <div class="legend"><span><i class="a"></i>Answered</span><span><i class="c"></i>Current</span><span><i class="u"></i>Not answered</span></div>
+    </aside>
+  </main>
+  <footer class="bottom-bar"><div class="container bottom-in">
+    <span class="save-state" id="save">{{ icon("check") }} Saved</span>
+    <div class="btn-row">
+      <button class="btn btn-secondary btn-sm" id="prev">{{ icon("arrowl") }} Previous</button>
+      <button class="btn btn-primary btn-sm" id="next">Next {{ icon("arrowr") }}</button>
+      <button class="btn btn-success btn-sm" id="finish">Submit exam</button>
+    </div>
+  </div></footer>
+  <div class="modal" id="confirm"><div class="modal-card">
+    <h3>Submit your exam?</h3>
+    <p class="muted" id="confirm-text"></p>
+    <div class="btn-row" style="justify-content:flex-end"><button class="btn btn-secondary" id="cancel">Go back</button><button class="btn btn-success" id="yes">Yes, submit</button></div>
+  </div></div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/exam.js') }}?v=1"></script>{% endblock %}

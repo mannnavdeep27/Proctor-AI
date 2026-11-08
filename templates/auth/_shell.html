@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="auth">
+  <aside class="auth-hero">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+    <a class="brand" href="/"><span class="brand-mark">🛡️</span>Proctor<b>AI</b></a>
+    <div class="hero-copy">
+      <h1>Fair, secure online exams.</h1>
+      <p>Take your exam from any phone or computer. Your timer, answers and progress are kept safely on the server.</p>
+      <ul class="hero-points">
+        <li style="--d:.1s"><span class="tick">⏱️</span><span>Timer starts only when you press <b>Begin Exam</b></span></li>
+        <li style="--d:.2s"><span class="tick">🔒</span><span>Register once with your Gmail, then log in with your Roll No.</span></li>
+        <li style="--d:.3s"><span class="tick">✓</span><span>Answers are saved automatically as you go</span></li>
+      </ul>
+    </div>
+    <div class="small" style="opacity:.8">© ProctorAI</div>
+  </aside>
+  <section class="auth-panel"><div class="card auth-card">{% block card %}{% endblock %}</div></section>
+</div>
+{% endblock %}

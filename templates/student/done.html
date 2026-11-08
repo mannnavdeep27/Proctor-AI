@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block title %}Exam submitted{% endblock %}
+{% block content %}
+<div class="center-page"><div class="card msg-card">
+  {% if reason == 'WINDOW_SWITCH' %}
+    <div class="msg-ic warn">{{ icon("alert") }}</div>
+    <h2>Your exam was submitted automatically</h2>
+    <p class="muted">You left the exam window, so the exam was submitted as the rules explained. Your answers up to that point were saved.</p>
+  {% elif reason == 'TIME_UP' %}
+    <div class="msg-ic warn">{{ icon("clock") }}</div>
+    <h2>Time is up</h2>
+    <p class="muted">Your exam was submitted automatically with the answers you had saved.</p>
+  {% else %}
+    <svg class="tick-svg" viewBox="0 0 84 84"><circle cx="42" cy="42" r="38"/><path d="M26 43l11 11 21-23"/></svg>
+    <h2>Exam submitted</h2>
+    <p class="muted">Thank you. Your answers were recorded.</p>
+  {% endif %}
+  <p class="small muted">{{ exam.title }} · Results are shared by your administrator.</p>
+  <a class="btn btn-primary mt" href="{{ url_for('student.dashboard') }}">Back to dashboard</a>
+</div></div>
+{% endblock %}

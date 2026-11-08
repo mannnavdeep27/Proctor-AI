@@ -1,0 +1,17 @@
+{% extends "admin/base.html" %}
+{% block title %}Results{% endblock %}
+{% block content %}
+<div class="admin-head"><div><h1>Results</h1><div class="muted">Every exam keeps its own results. Choose an exam.</div></div></div>
+{% if not blocks %}<div class="card empty">{{ icon("bar","ic-lg") }}<h3>No exams yet</h3></div>{% endif %}
+<div class="grid grid-3">
+{% for b in blocks %}
+<div class="card lift">
+  <a class="block-card" href="{{ url_for('admin.results', exam=b.id) }}">
+    <h3>{{ b.title }}</h3><div class="small muted"><span class="js-time" data-ts="{{ b.start_at }}">{{ b.start_at|utcfmt }}</span></div>
+    <div class="block-stats"><div><b>{{ b.total }}</b><span>Attempts</span></div><div><b>{{ b.done or 0 }}</b><span>Submitted</span></div><div><b style="color:var(--red)">{{ b.flagged or 0 }}</b><span>Flagged</span></div></div>
+  </a>
+  <div class="btn-row mt"><a class="btn btn-secondary btn-sm" href="{{ url_for('admin.results', exam=b.id) }}">{{ icon("eye") }} Open</a>
+  <a class="btn btn-primary btn-sm" href="{{ url_for('admin.export_csv', exam_id=b.id) }}">{{ icon("download") }} CSV</a></div>
+</div>{% endfor %}
+</div>
+{% endblock %}

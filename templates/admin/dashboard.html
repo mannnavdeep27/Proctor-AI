@@ -1,0 +1,22 @@
+{% extends "admin/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="admin-head"><h1>Dashboard</h1><a class="btn btn-primary" href="{{ url_for('admin.exam_new') }}">{{ icon("plus") }} New exam</a></div>
+<div class="grid grid-4">
+  <div class="card stat" style="--d:0s"><div class="stat-ic">{{ icon("users") }}</div><div><b data-count="{{ stats.students }}">{{ stats.students }}</b><span>Students</span></div></div>
+  <div class="card stat" style="--d:.05s"><div class="stat-ic green">{{ icon("file") }}</div><div><b data-count="{{ stats.exams }}">{{ stats.exams }}</b><span>Exams ({{ stats.live }} live)</span></div></div>
+  <div class="card stat" style="--d:.1s"><div class="stat-ic amber">{{ icon("clock") }}</div><div><b data-count="{{ stats.in_progress }}">{{ stats.in_progress }}</b><span>In progress now</span></div></div>
+  <div class="card stat" style="--d:.15s"><div class="stat-ic red">{{ icon("alert") }}</div><div><b data-count="{{ stats.flagged }}">{{ stats.flagged }}</b><span>Flagged of {{ stats.submitted }} submitted</span></div></div>
+</div>
+<div class="grid grid-2 mt">
+  <div class="card"><div class="card-title"><h3 style="margin:0">Attempts per exam</h3></div><div class="chart-box"><canvas id="chart-exams"></canvas></div></div>
+  <div class="card"><div class="card-title"><h3 style="margin:0">Verdicts</h3></div><div class="chart-box"><canvas id="chart-verdicts"></canvas></div></div>
+</div>
+<script type="application/json" id="chart-data">{{ {"exams": per_exam, "verdicts": verdicts}|tojson }}</script>
+<div class="card mt"><div class="card-title"><h3 style="margin:0">Latest submissions</h3><a href="{{ url_for('admin.results') }}">View all</a></div>
+{% if recent %}<div class="table-wrap"><table class="table"><thead><tr><th>Student</th><th>Exam</th><th>Score</th><th>Verdict</th><th>Submitted</th></tr></thead><tbody>
+{% for r in recent %}<tr><td><a href="{{ url_for('admin.attempt_detail', attempt_id=r.id) }}"><b>{{ r.name }}</b></a><div class="small muted">{{ r.roll }}</div></td><td>{{ r.title }}</td><td>{{ '%g' % r.score }} / {{ '%g' % r.max_score }}</td>
+<td>{% include "admin/_verdict.html" %}</td><td class="js-time" data-ts="{{ r.submitted_at }}">{{ r.submitted_at|utcfmt }}</td></tr>{% endfor %}</tbody></table></div>
+{% else %}<div class="empty">No submissions yet.</div>{% endif %}</div>
+{% endblock %}
+{% block ascripts %}<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script><script src="{{ url_for('static', filename='js/charts.js') }}?v=1"></script>{% endblock %}

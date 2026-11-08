@@ -1,0 +1,41 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit exam' if exam else 'New exam' }}{% endblock %}
+{% block content %}
+<div class="admin-head"><h1>{{ 'Edit exam' if exam else 'New exam' }}</h1><a class="btn btn-secondary" href="{{ url_for('admin.exams_list') }}">{{ icon("arrowl") }} Back</a></div>
+{% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+<form method="post" data-loading id="exam-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="tz_offset" id="tz_offset" value="0">
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>Basics</h3>
+      <div class="field"><label>Exam title</label><input class="input" name="title" value="{{ v.title or '' }}" placeholder="e.g. Cyber Security - Unit Test 1" required></div>
+      <div class="field"><label>Description (optional)</label><textarea class="input" name="description" rows="2">{{ v.description or '' }}</textarea></div>
+      <div class="grid grid-2">
+        <div class="field"><label>Start time</label><input class="input js-local-dt" type="datetime-local" name="start_at" data-utc="{{ v.start_at if v.start_at is number else '' }}" value="{{ v.start_at if v.start_at is string else '' }}" required></div>
+        <div class="field"><label>End time</label><input class="input js-local-dt" type="datetime-local" name="end_at" data-utc="{{ v.end_at if v.end_at is number else '' }}" value="{{ v.end_at if v.end_at is string else '' }}" required></div>
+      </div>
+      <div class="hint" style="margin-top:-8px;margin-bottom:12px">Times are in your browser's time zone. A student who starts before the end time still gets the full duration.</div>
+      <div class="field"><label>Duration (minutes)</label><input class="input" type="number" min="1" max="600" name="duration_minutes" value="{{ v.duration_minutes }}" required></div>
+      <div class="field"><label>Who can take this exam?</label>
+        <div class="label small muted" style="font-weight:500">Branches (leave all unchecked for everyone)</div>
+        <div class="chips">{% for b in branch_options %}<label class="chip"><input type="checkbox" name="branches" value="{{ b }}" {{ 'checked' if b in sel_branches }}>{{ b }}</label>{% endfor %}</div>
+        <div class="label small muted mt" style="font-weight:500">Years (leave all unchecked for everyone)</div>
+        <div class="chips">{% for y in year_options %}<label class="chip"><input type="checkbox" name="years" value="{{ y }}" {{ 'checked' if y in sel_years }}>{{ y }}</label>{% endfor %}</div></div>
+    </div>
+    <div class="card">
+      <h3>Rules &amp; behaviour</h3>
+      <div class="field"><label>Rules shown to students (one rule per line)</label><textarea class="input" name="rules" rows="6" placeholder="Leave empty to use the default rules.">{{ v.rules or '' }}</textarea></div>
+      <div class="grid grid-2">
+        <div class="field"><label>Minimum reading time (seconds)</label><input class="input" type="number" min="0" max="600" name="min_read_seconds" value="{{ v.min_read_seconds }}"></div>
+        <div class="field"><label>Window-switch grace time (seconds)</label><input class="input" type="number" min="0" max="120" name="grace_seconds" value="{{ v.grace_seconds }}"></div>
+      </div>
+      <div class="field"><label>Warnings before auto-submit</label><input class="input" type="number" min="0" max="10" name="allowed_warnings" value="{{ v.allowed_warnings }}"><div class="hint">0 = submit automatically the first time a student stays away longer than the grace time.</div></div>
+      <label class="check"><input type="checkbox" name="shuffle_questions" {{ 'checked' if v.shuffle_questions }}><span>Shuffle questions for each student</span></label>
+      <label class="check"><input type="checkbox" name="shuffle_options" {{ 'checked' if v.shuffle_options }}><span>Shuffle options for each student</span></label>
+      <label class="check"><input type="checkbox" name="block_copy" {{ 'checked' if v.block_copy }}><span>Block copy, text selection and right-click</span></label>
+      <label class="check"><input type="checkbox" name="is_active" {{ 'checked' if v.is_active }}><span>Exam link is active</span></label>
+    </div>
+  </div>
+  <div class="btn-row mt"><button class="btn btn-primary">{{ 'Save changes' if exam else 'Create exam' }}</button><a class="btn btn-secondary" href="{{ url_for('admin.exams_list') }}">Cancel</a></div>
+</form>
+{% endblock %}
