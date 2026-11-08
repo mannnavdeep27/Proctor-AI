@@ -33,7 +33,6 @@ def register_page():
     if current_user():
         return redirect(url_for("student.dashboard"))
     branches, years = _lists()
-    return render_template("auth/register.html", branches=branches, years=years, dev=mailer.dev_mode())
     
     if request.method == "POST":
         # Direct form submission fallback handling
