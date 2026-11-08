@@ -1,7 +1,7 @@
 """ProctorAI web application (Flask).
 
-Local run:      python app.py
-Vercel:         api/index.py imports `app` from this file.
+Local run:       python app.py
+Vercel:          api/index.py imports `app` from this file.
 """
 import secrets
 import sys
@@ -40,6 +40,10 @@ def create_app():
         JSON_SORT_KEYS=False,
     )
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+
+    # Initialize database schema once at application startup
+    with app.app_context():
+        schema.init_db()
 
     from routes import admin, auth, exam_api, student
     for module in (auth, student, exam_api, admin):
@@ -80,7 +84,6 @@ def create_app():
             return render_template("message.html", title="Server is not configured",
                                    text=" ".join(problems) + " Set it in the hosting environment variables.",
                                    tone="warn"), 500
-        schema.init_db()
         if request.method in ("POST", "PUT", "PATCH", "DELETE") and not security.csrf_ok():
             if request.path.startswith("/api/"):
                 return {"ok": False, "error": "Your session expired. Please refresh the page."}, 400
